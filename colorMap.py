@@ -2,7 +2,6 @@ import os
 import binascii
 import numpy as np
 
-
 def getFileSize(filepath):
     f_size = os.path.getsize(filepath)
     size = f_size/float(1024)
