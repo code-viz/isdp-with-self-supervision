@@ -17,4 +17,4 @@ The codeVis.py and colorMap.py are two related scripts.
 ```
 python codeVis.py
 ```
-And that's it already. We now have a list of images.
+And that's it already. We now have a list of images on [data/img/gray_img](https://github.com/code-viz/isdp-with-self-supervision/tree/main/data/img).
