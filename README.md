@@ -5,6 +5,7 @@ self-supervised learning for image based software defect prediction
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+
 The code may not work on Window OS.
 
 ### Prerequisites
