@@ -9,7 +9,7 @@ The code may not work on Window OS.
 
 ### Prerequisites
 
-To install the software, you need to doownload the following:
+To install the software, you need to download the following:
 
 First generate a datasets.
 The codeVis.py and colorMap.py are two related scripts.
