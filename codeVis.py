@@ -5,8 +5,6 @@ import pandas as pd
 from colorMap import *
 import cv2
 
-
-
 if __name__ == "__main__":
 
     save_path   = 'data/img/'
