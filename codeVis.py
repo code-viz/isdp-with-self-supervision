@@ -60,7 +60,7 @@ if __name__ == "__main__":
                 if size == 0:
                     break
                 
-                im = getNewColorImg(file_path+'.java', img_width)
+                im = getRectangleGrayImg(file_path+'.java', img_width)
                 print(im)
 
                 if label == 1:

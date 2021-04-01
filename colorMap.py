@@ -7,7 +7,7 @@ def getFileSize(filepath):
     size = f_size/float(1024)
     return round(size, 2)
 
-def getNewColorImg(filename, width=32):
+def getRectangleGrayImg(filename, width=32):
     size = getFileSize(filename)
 
     with open(filename, 'rb') as f:
