@@ -10,8 +10,7 @@ import torch.optim.lr_scheduler as lr_scheduler_torch
 from networks import ResNet50Fc
 from loss import loss_dict
 
-
-if __name__ =="__main__":
+def arg_parse():
     parser = argparse.ArgumentParser(description='Transfer Learning')
     parser.add_argument('--gpu_id', type=str, nargs='?', default='0', help="device id to run")
     parser.add_argument('--source', type=str, nargs='?', default='poi_3.0', help="source data")
@@ -19,7 +18,11 @@ if __name__ =="__main__":
     parser.add_argument('--network', type=str, nargs='?', default='ResNet50Fc', help="network name")
     parser.add_argument('--loss_name', type=str, nargs='?', default='DAN', help="loss name")
     parser.add_argument('--tradeoff', type=float, nargs='?', default=1, help="tradeoff")
-    args = parser.parse_args()
+    return parser.parse_args()
+
+if __name__ =="__main__":
+
+    args = arg_parse()
 
     path = 'data/txt/'
 
