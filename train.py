@@ -42,7 +42,7 @@ if __name__ =="__main__":
         {
             'name':'target',
             'path':path + args.target + '.txt',
-            'batch_size':{'train':64, 'text':64}
+            'batch_size':{'train':64, 'test':64}
         }]
     config['network'] = {'name':args.network}
     print(config['loss'])
