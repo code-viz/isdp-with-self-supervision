@@ -11,16 +11,10 @@ from torch.utils.data import DataLoader
 
 import preprocess as prep
 import networks as network
-<<<<<<< HEAD
 import lr_schedule
 import loss
 
-=======
-from loss import loss_dict
->>>>>>> 4f2db01ea6ce09bfb24bd5e97904f4f7b377d628
 from torchvision import datasets
-
-
 optim_dict = {'SGD':optim.SGD, 'Adam':optim.Adam}
 
 def f1Loss(predict, all_label):
@@ -42,6 +36,7 @@ def f1Loss(predict, all_label):
     R = float(TP) / (TP + FN) if (TP + FN != 0) else 0
     F = float((2 * P * R) / (P + R)) if P + R != 0 else 0
     return F
+
 
 def classification(config):
 
@@ -236,15 +231,15 @@ def classification(config):
 
 def arg_parse():
     parser = argparse.ArgumentParser(description='Transfer Learning')
-    parser.add_argument('--source', type=str, nargs='?', default='poi-3.0', help="source data")
-    parser.add_argument('--target', type=str, nargs='?', default='ant-1.6', help="target data")
+    parser.add_argument('--source', type=str, nargs='?', default='ant-1.6', help="source data")
+    parser.add_argument('--target', type=str, nargs='?', default='poi-3.0', help="target data")
     parser.add_argument('--network', type=str, nargs='?', default='ResNet50Fc', help="network name")
     parser.add_argument('--loss_name', type=str, nargs='?', default='DAN_Linear', help="loss name")
     parser.add_argument('--tradeoff', type=float, nargs='?', default=1, help="tradeoff")
     parser.add_argument('--bottleneck', type=int, nargs='?', default=1, help="whether to use bottleneck")
     return parser.parse_args()
     
-    
+
 if __name__ =="__main__":
 
     args = arg_parse()
@@ -273,6 +268,7 @@ if __name__ =="__main__":
         'name':args.network,
         'bottleneck':args.bottleneck,
         'bottleneck_dim':256
+    }
 
     config['optimizer'] = {
         'name':'SGD', 'optim_params':{'lr':0.05, 'momentum':0.9, 'weight_decay':0.0005, 'nesterov':True},
@@ -283,3 +279,4 @@ if __name__ =="__main__":
 
     print(config)
     classification(config)
+
