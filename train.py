@@ -9,10 +9,10 @@ import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler_torch
 from torch.utils.data import DataLoader
 
-
 import preprocess as prep
 import networks as network
-from loss import loss_dict
+import lr_schedule
+import loss
 
 from torchvision import datasets
 
@@ -67,8 +67,9 @@ def classification(config):
 
     ## set loss
     class_criterion     = nn.CrossEntropyLoss()
+
     loss_config         = config['loss']
-    transfer_criterion   = loss_dict[loss_config['name']]
+    transfer_criterion   = loss.loss_dict[loss_config['name']]
 
     ## set base network
     net_config      = config['network']
@@ -104,20 +105,25 @@ def classification(config):
     base_network.to(device)
     bottleneck_layer.to(device)
     
-    ## set optimizer
+    # set optimizer
     if net_config['bottleneck']:
         parameter_list = [
-            {'params':base_network.parameters(), 'lr':0.1},
-            {'params':bottleneck_layer.parameters(), 'lr':0.1},
-            {'params':classifier_layer.parameters(), 'lr':0.1}]
+            {'params':base_network.parameters(), 'lr':10},
+            {'params':bottleneck_layer.parameters(), 'lr':10},
+            {'params':classifier_layer.parameters(), 'lr':10}]
     else:
         parameter_list = [
-            {'params':base_network.parameters(), 'lr':0.1},
-            {'params':classifier_layer.parameters(), 'lr':0.1}
+            {'params':base_network.parameters(), 'lr':10},
+            {'params':classifier_layer.parameters(), 'lr':10}
         ]
-
     optimizer_config = config['optimizer']
-    optimizer        = optim_dict[optimizer_config['name']](parameter_list, lr=optimizer_config['learning_rate'])
+    optimizer        = optim_dict[optimizer_config['name']](parameter_list, **(optimizer_config['optim_params']))
+    param_lr = []
+    for param_group in optimizer.param_groups:
+        param_lr.append(param_group['lr'])
+    schedule_param = optimizer_config['lr_param']
+    lr_scheduler = lr_schedule.schedule_dict[optimizer_config['lr_type']]
+    
 
     ## train
     # train_classifier_losses, train_total_losses, test_losses = [], [], []
@@ -140,14 +146,14 @@ def classification(config):
             inputs_target, _labels_target = iter_target.next()
             inputs_target    = inputs_target.to(device)
 
-            steps += 1
-
             if net_config["bottleneck"]:
                 bottleneck_layer.train(True)
             base_network.train(True)
             classifier_layer.train(True)
 
+            optimizer = lr_scheduler(param_lr, optimizer, steps, **schedule_param)
             optimizer.zero_grad()
+            steps += 1
 
             inputs = torch.cat((inputs_source, inputs_target), dim=0)
             features = base_network(inputs)
@@ -229,7 +235,7 @@ def arg_parse():
     parser.add_argument('--source', type=str, nargs='?', default='poi-3.0', help="source data")
     parser.add_argument('--target', type=str, nargs='?', default='ant-1.6', help="target data")
     parser.add_argument('--network', type=str, nargs='?', default='ResNet50Fc', help="network name")
-    parser.add_argument('--loss_name', type=str, nargs='?', default='DAN', help="loss name")
+    parser.add_argument('--loss_name', type=str, nargs='?', default='DAN_Linear', help="loss name")
     parser.add_argument('--tradeoff', type=float, nargs='?', default=1, help="tradeoff")
     parser.add_argument('--bottleneck', type=int, nargs='?', default=1, help="whether to use bottleneck")
     return parser.parse_args()
@@ -241,7 +247,7 @@ if __name__ =="__main__":
     path = 'data/img/gray_img/'
 
     config = {}
-    config['epoch'] = 20
+    config['epoch'] = 50
     config['prep'] = {
         'source':{'name':'source', 'resize_size':256, 'crop_size':224},
         'target':{'name':'target', 'resize_size':256, 'crop_size':224}
@@ -263,10 +269,10 @@ if __name__ =="__main__":
         'name':args.network,
         'bottleneck':args.bottleneck,
         'bottleneck_dim':256
-        }
+
     config['optimizer'] = {
-        'name':'Adam',
-        'learning_rate' : 0.001
+        'name':'SGD', 'optim_params':{'lr':0.05, 'momentum':0.9, 'weight_decay':0.0005, 'nesterov':True},
+        'lr_type':'inv', 'lr_param':{'init_lr':0.0003, 'gamma':0.0003, 'power':0.75}
     }
 
     # print(config['loss'])
