@@ -11,10 +11,15 @@ from torch.utils.data import DataLoader
 
 import preprocess as prep
 import networks as network
+<<<<<<< HEAD
 import lr_schedule
 import loss
 
+=======
+from loss import loss_dict
+>>>>>>> 4f2db01ea6ce09bfb24bd5e97904f4f7b377d628
 from torchvision import datasets
+
 
 optim_dict = {'SGD':optim.SGD, 'Adam':optim.Adam}
 
@@ -37,7 +42,6 @@ def f1Loss(predict, all_label):
     R = float(TP) / (TP + FN) if (TP + FN != 0) else 0
     F = float((2 * P * R) / (P + R)) if P + R != 0 else 0
     return F
-
 
 def classification(config):
 
@@ -240,7 +244,7 @@ def arg_parse():
     parser.add_argument('--bottleneck', type=int, nargs='?', default=1, help="whether to use bottleneck")
     return parser.parse_args()
     
-
+    
 if __name__ =="__main__":
 
     args = arg_parse()
@@ -279,4 +283,3 @@ if __name__ =="__main__":
 
     print(config)
     classification(config)
-
